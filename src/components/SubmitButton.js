@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 const SubmitButton = styled.input.attrs({
   type: 'submit',
+  value: '확인',
 })`
   display: block;
   font-size: 12px;

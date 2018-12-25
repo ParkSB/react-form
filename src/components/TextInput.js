@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
-const TextField = styled.input.attrs({
+const TextInput = styled.input.attrs({
   type: 'text',
+  autoFocus: props => props.autoFocus,
 })`
   display: block;
   font-size: 12px;
@@ -11,4 +12,4 @@ const TextField = styled.input.attrs({
   width: 96%;
 `;
 
-export default TextField;
+export default TextInput;

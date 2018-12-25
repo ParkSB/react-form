@@ -1,23 +1,44 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import Container from './components/Container';
 import Form from './components/Form';
-import CardNumberForm from './components/CardNumberForm';
-import CardDateForm from './components/CardDateForm';
-import SocialNumberForm from './components/SocialNumberForm';
+
+import CardNumberField from './components/Fields/CardNumberField';
+import CardDateField from './components/Fields/CardDateField';
+import SocialNumberField from './components/Fields/SocialNumberField';
 import SubmitButton from './components/SubmitButton';
 
-function App() {
-  return (
-    <Container>
-      <Form>
-        <CardNumberForm />
-        <CardDateForm />
-        <SocialNumberForm />
-        <SubmitButton />
-      </Form>
-    </Container>
-  );
+class App extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      currentFocused: 0,
+    };
+
+    this.fields = [];
+  }
+
+  focusNextField = () => {
+    const { currentFocused } = this.state;
+
+    this.fields[currentFocused + 1].focusIt();
+
+    this.setState({ currentFocused: currentFocused + 1 });
+  }
+
+  render() {
+    return (
+      <Container>
+        <Form>
+          <CardNumberField ref={(el) => { this.fields.push(el); }} autoFocus />
+          <CardDateField ref={(el) => { this.fields.push(el); }} />
+          <SocialNumberField ref={(el) => { this.fields.push(el); }} />
+          <SubmitButton />
+        </Form>
+      </Container>
+    );
+  }
 }
 
 export default App;
