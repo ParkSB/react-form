@@ -29,7 +29,7 @@ class CardNumberField extends Component {
     const { value } = this.state;
     const validator = new Validator();
 
-    validator.testCardNumber(value).then((result) => {
+    validator.testCardNumber(value.replace(/\s/g, '')).then((result) => {
       if (typeof result === 'string') {
         this.setState({ errorMessage: result });
       } else {
@@ -39,9 +39,40 @@ class CardNumberField extends Component {
   }
 
   applyFormat = (e) => {
-    this.setState({
-      value: e.target.value,
-    });
+    let cardNumber = e.target.value;
+
+    const { value } = this.state;
+    const cardNumberLen = cardNumber.length;
+    const unit = 4;
+    const set = 4;
+
+    const isCompleted = (cardNum) => {
+      return cardNum.length >= (unit * set + (set - 1));
+    };
+
+    if (value.length < cardNumberLen) { // not backspace
+      if (!isCompleted(value)) {
+        if (cardNumberLen % (unit + 1) === 0) {
+          cardNumber = `${value} ${cardNumber.slice(-1)}`;
+        }
+
+        if (isCompleted(cardNumber)) {
+          console.log('focus on next field');
+        }
+
+        this.setState({
+          value: cardNumber,
+        });
+      }
+    } else {
+      if (cardNumber.slice(-1) === ' ') {
+        cardNumber = cardNumber.slice(0, -1);
+      }
+
+      this.setState({
+        value: cardNumber,
+      });
+    }
   }
 
   render() {
