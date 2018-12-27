@@ -13,8 +13,11 @@ class CardNumberField extends Component {
 
     this.state = {
       value: '',
+      caretPos: 0,
       errorMessage: '',
     };
+
+    this.input = null;
 
     CardNumberField.propTypes = {
       autoFocus: PropTypes.bool,
@@ -23,6 +26,12 @@ class CardNumberField extends Component {
     CardNumberField.defaultProps = {
       autoFocus: false,
     };
+  }
+
+  componentDidUpdate = () => {
+    const { caretPos } = this.state;
+
+    this.input.setSelectionRange(caretPos, caretPos);
   }
 
   testValidation = () => {
@@ -46,7 +55,9 @@ class CardNumberField extends Component {
     let cardNumber = removeWhitespace(e.target.value);
     let offset = 0;
 
+    const { value } = this.state;
     const cardNumberLen = cardNumber.length;
+    const caret = e.target.selectionStart;
     const unit = 4;
     const set = 4;
 
@@ -57,12 +68,18 @@ class CardNumberField extends Component {
       }
     }
 
-    if (removeWhitespace(cardNumber).length > (unit * set)) {
-      console.log('focus on next field');
+    if (removeWhitespace(cardNumber).length > (unit * set)) { // is completed?
+      if (caret >= value.length) {
+        console.log('focus on next field');
+      }
     } else {
-      this.setState({
-        value: cardNumber,
-      });
+      this.setState({ value: cardNumber });
+    }
+
+    if (caret >= value.length) {
+      this.setState({ caretPos: caret + offset });
+    } else {
+      this.setState({ caretPos: caret });
     }
   }
 
@@ -74,6 +91,7 @@ class CardNumberField extends Component {
       <div>
         <Label>카드번호</Label>
         <TextInput
+          ref={(el) => { this.input = el; }}
           autoFocus={autoFocus}
           onBlur={this.testValidation}
           onChange={this.applyFormat}
