@@ -39,36 +39,27 @@ class CardNumberField extends Component {
   }
 
   applyFormat = (e) => {
-    let cardNumber = e.target.value;
+    const removeWhitespace = (str) => {
+      return str.replace(/\s/g, '');
+    };
 
-    const { value } = this.state;
+    let cardNumber = removeWhitespace(e.target.value);
+    let offset = 0;
+
     const cardNumberLen = cardNumber.length;
     const unit = 4;
     const set = 4;
 
-    const isCompleted = (cardNum) => {
-      return cardNum.length >= (unit * set + (set - 1));
-    };
-
-    if (value.length < cardNumberLen) { // not backspace
-      if (!isCompleted(value)) {
-        if (cardNumberLen % (unit + 1) === 0) {
-          cardNumber = `${value} ${cardNumber.slice(-1)}`;
-        }
-
-        if (isCompleted(cardNumber)) {
-          console.log('focus on next field');
-        }
-
-        this.setState({
-          value: cardNumber,
-        });
+    for (let i = 1; i < cardNumberLen; i += 1) {
+      if (i % unit === 0) {
+        cardNumber = `${cardNumber.slice(0, i + offset)} ${cardNumber.slice(i + offset)}`;
+        offset += 1;
       }
+    }
+
+    if (removeWhitespace(cardNumber).length > (unit * set)) {
+      console.log('focus on next field');
     } else {
-      if (cardNumber.slice(-1) === ' ') {
-        cardNumber = cardNumber.slice(0, -1);
-      }
-
       this.setState({
         value: cardNumber,
       });
