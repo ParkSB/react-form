@@ -20,6 +20,7 @@ class CardNumberField extends Component {
     this.input = null;
 
     CardNumberField.propTypes = {
+      onCompleted: PropTypes.func.isRequired,
       autoFocus: PropTypes.bool,
     };
 
@@ -38,7 +39,7 @@ class CardNumberField extends Component {
     const { value } = this.state;
     const validator = new Validator();
 
-    validator.testCardNumber(value.replace(/\s/g, '')).then((result) => {
+    validator.testCardNumber(value).then((result) => {
       if (typeof result === 'string') {
         this.setState({ errorMessage: result });
       } else {
@@ -54,10 +55,14 @@ class CardNumberField extends Component {
 
     let cardNumber = removeWhitespace(e.target.value);
     let offset = 0;
+    let caret = e.target.selectionStart;
 
+    const { onCompleted } = this.props;
     const { value } = this.state;
+
     const cardNumberLen = cardNumber.length;
-    const caret = e.target.selectionStart;
+    const isDeleted = removeWhitespace(value).length > cardNumber.length;
+
     const unit = 4;
     const set = 4;
 
@@ -65,15 +70,25 @@ class CardNumberField extends Component {
       if (i % unit === 0) {
         cardNumber = `${cardNumber.slice(0, i + offset)} ${cardNumber.slice(i + offset)}`;
         offset += 1;
+
+        if (!isDeleted && caret - offset === i) {
+          caret += 1;
+        }
       }
     }
 
     if (removeWhitespace(cardNumber).length > (unit * set)) { // is completed?
+      caret -= 1;
       if (caret >= value.length) {
-        console.log('focus on next field');
+        onCompleted();
       }
     } else {
       this.setState({ value: cardNumber });
+      if (removeWhitespace(cardNumber).length >= (unit * set)) { // is completed?
+        if (caret >= value.length) {
+          onCompleted();
+        }
+      }
     }
 
     if (caret >= value.length) {
@@ -81,6 +96,10 @@ class CardNumberField extends Component {
     } else {
       this.setState({ caretPos: caret });
     }
+  }
+
+  focusIt = () => {
+    this.input.focus();
   }
 
   render() {

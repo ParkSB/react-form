@@ -22,18 +22,28 @@ class App extends Component {
   focusNextField = () => {
     const { currentFocused } = this.state;
 
-    this.fields[currentFocused + 1].focusIt();
-
-    this.setState({ currentFocused: currentFocused + 1 });
+    if (currentFocused < this.fields.length - 1) {
+      this.fields[currentFocused + 1].focusIt();
+      this.setState({ currentFocused: currentFocused + 1 });
+    }
   }
 
   render() {
     return (
       <Container>
         <Form>
-          <CardNumberField ref={(el) => { this.fields.push(el); }} autoFocus />
-          <CardDateField ref={(el) => { this.fields.push(el); }} />
-          <SocialNumberField ref={(el) => { this.fields.push(el); }} />
+          <CardNumberField
+            ref={(el) => { this.fields[0] = el; }}
+            onCompleted={this.focusNextField}
+            autoFocus
+          />
+          <CardDateField
+            ref={(el) => { this.fields[1] = el; }}
+            onCompleted={this.focusNextField}
+          />
+          <SocialNumberField
+            ref={(el) => { this.fields[2] = el; }}
+          />
           <SubmitButton />
         </Form>
       </Container>
