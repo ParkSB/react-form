@@ -69,36 +69,38 @@ class CardDateField extends Component {
     const unit = 2;
     const set = 2;
 
-    // 입력 값에서 연, 월 분리
-    for (let i = 1; i < cardDateLen; i += 1) {
-      if (i % unit === 0) {
-        cardDate = `${cardDate.slice(0, i + offset)} / ${cardDate.slice(i + offset)}`;
-        offset += 3;
+    if (!Number.isNaN(Number(cardDate))) { // 문자 입력 무시
+      // 입력 값에서 연, 월 분리
+      for (let i = 1; i < cardDateLen; i += 1) {
+        if (i % unit === 0) {
+          cardDate = `${cardDate.slice(0, i + offset)} / ${cardDate.slice(i + offset)}`;
+          offset += 3;
 
-        if (!isDeleted && caret - offset === i) {
-          caret += 3;
+          if (!isDeleted && caret - offset === i) {
+            caret += 3;
+          }
         }
       }
-    }
 
-    if (removeWhitespace(cardDate).length > (unit * set)) { // 입력완료
-      caret -= 1;
-      if (onCompleted && caret >= value.length) {
-        onCompleted();
-      }
-    } else {
-      this.setState({ value: cardDate });
-      if (removeWhitespace(cardDate).length >= (unit * set)) { // 입력완료
+      if (removeWhitespace(cardDate).length > (unit * set)) { // 입력완료
+        caret -= 1;
         if (onCompleted && caret >= value.length) {
           onCompleted();
         }
+      } else {
+        this.setState({ value: cardDate });
+        if (removeWhitespace(cardDate).length >= (unit * set)) { // 입력완료
+          if (onCompleted && caret >= value.length) {
+            onCompleted();
+          }
+        }
       }
-    }
 
-    if (caret >= value.length) {
-      this.setState({ caretPos: caret + offset });
-    } else {
-      this.setState({ caretPos: caret });
+      if (caret >= value.length) {
+        this.setState({ caretPos: caret + offset });
+      } else {
+        this.setState({ caretPos: caret });
+      }
     }
   }
 

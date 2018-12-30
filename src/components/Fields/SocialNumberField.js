@@ -54,32 +54,34 @@ class SocialNumberField extends Component {
     const isDeleted = value.replace(/\s/g, '').length > socialNumber.length; // 삭제 동작 여부
     const unit = 6;
 
-    if (value === '') {
-      this.setState({ value: socialNumber });
-    } else if (isDeleted) {
-      socialNumber = `${value.slice(0, caret)}${value.slice(caretPos)}`;
-    } else {
-      socialNumber = `${value}${socialNumber.slice(-1)}`;
-    }
-
-    if (socialNumber.length > unit) { // 입력완료
-      caret -= 1;
-      if (onCompleted && caret >= value.length) {
-        onCompleted();
+    if (!Number.isNaN(Number(socialNumber))) { // 문자 입력 무시
+      if (value === '') {
+        this.setState({ value: socialNumber });
+      } else if (isDeleted) {
+        socialNumber = `${value.slice(0, caret)}${value.slice(caretPos)}`;
+      } else {
+        socialNumber = `${value}${socialNumber.slice(-1)}`;
       }
-    } else {
-      this.setState({
-        value: socialNumber,
-        displayValue: socialNumber.replace(/[0-9]/g, '•'),
-      });
-      if (socialNumber.length >= unit) { // 입력완료
+
+      if (socialNumber.length > unit) { // 입력완료
+        caret -= 1;
         if (onCompleted && caret >= value.length) {
           onCompleted();
         }
+      } else {
+        this.setState({
+          value: socialNumber,
+          displayValue: socialNumber.replace(/[0-9]/g, '•'),
+        });
+        if (socialNumber.length >= unit) { // 입력완료
+          if (onCompleted && caret >= value.length) {
+            onCompleted();
+          }
+        }
       }
-    }
 
-    this.setState({ caretPos: caret });
+      this.setState({ caretPos: caret });
+    }
   }
 
   focusIt = () => {

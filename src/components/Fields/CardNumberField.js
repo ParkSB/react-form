@@ -66,36 +66,38 @@ class CardNumberField extends Component {
     const unit = 4;
     const set = 4;
 
-    // 입력 값을 공백으로 분리
-    for (let i = 1; i < cardNumberLen; i += 1) {
-      if (i % unit === 0) {
-        cardNumber = `${cardNumber.slice(0, i + offset)} ${cardNumber.slice(i + offset)}`;
-        offset += 1;
+    if (!Number.isNaN(Number(cardNumber))) { // 문자 입력 무시
+      // 입력 값을 공백으로 분리
+      for (let i = 1; i < cardNumberLen; i += 1) {
+        if (i % unit === 0) {
+          cardNumber = `${cardNumber.slice(0, i + offset)} ${cardNumber.slice(i + offset)}`;
+          offset += 1;
 
-        if (!isDeleted && caret - offset === i) {
-          caret += 1;
+          if (!isDeleted && caret - offset === i) {
+            caret += 1;
+          }
         }
       }
-    }
 
-    if (removeWhitespace(cardNumber).length > (unit * set)) { // 입력완료
-      caret -= 1;
-      if (caret >= value.length) {
-        onCompleted();
-      }
-    } else {
-      this.setState({ value: cardNumber });
-      if (removeWhitespace(cardNumber).length >= (unit * set)) { // 입력완료
+      if (removeWhitespace(cardNumber).length > (unit * set)) { // 입력완료
+        caret -= 1;
         if (caret >= value.length) {
           onCompleted();
         }
+      } else {
+        this.setState({ value: cardNumber });
+        if (removeWhitespace(cardNumber).length >= (unit * set)) { // 입력완료
+          if (caret >= value.length) {
+            onCompleted();
+          }
+        }
       }
-    }
 
-    if (caret >= value.length) {
-      this.setState({ caretPos: caret + offset });
-    } else {
-      this.setState({ caretPos: caret });
+      if (caret >= value.length) {
+        this.setState({ caretPos: caret + offset });
+      } else {
+        this.setState({ caretPos: caret });
+      }
     }
   }
 
