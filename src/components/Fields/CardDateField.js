@@ -64,11 +64,12 @@ class CardDateField extends Component {
     const { value } = this.state;
 
     const cardDateLen = cardDate.length;
-    const isDeleted = removeWhitespace(value).length > cardDate.length;
+    const isDeleted = removeWhitespace(value).length > cardDate.length; // 삭제 동작 여부
 
     const unit = 2;
     const set = 2;
 
+    // 입력 값에서 연, 월 분리
     for (let i = 1; i < cardDateLen; i += 1) {
       if (i % unit === 0) {
         cardDate = `${cardDate.slice(0, i + offset)} / ${cardDate.slice(i + offset)}`;
@@ -80,14 +81,14 @@ class CardDateField extends Component {
       }
     }
 
-    if (removeWhitespace(cardDate).length > (unit * set)) { // is completed?
+    if (removeWhitespace(cardDate).length > (unit * set)) { // 입력완료
       caret -= 1;
       if (onCompleted && caret >= value.length) {
         onCompleted();
       }
     } else {
       this.setState({ value: cardDate });
-      if (removeWhitespace(cardDate).length >= (unit * set)) { // is completed?
+      if (removeWhitespace(cardDate).length >= (unit * set)) { // 입력완료
         if (onCompleted && caret >= value.length) {
           onCompleted();
         }

@@ -51,7 +51,7 @@ class SocialNumberField extends Component {
     const { onCompleted } = this.props;
     const { value, caretPos } = this.state;
 
-    const isDeleted = value.replace(/\s/g, '').length > socialNumber.length;
+    const isDeleted = value.replace(/\s/g, '').length > socialNumber.length; // 삭제 동작 여부
     const unit = 6;
 
     if (value === '') {
@@ -62,7 +62,7 @@ class SocialNumberField extends Component {
       socialNumber = `${value}${socialNumber.slice(-1)}`;
     }
 
-    if (socialNumber.length > unit) { // is completed?
+    if (socialNumber.length > unit) { // 입력완료
       caret -= 1;
       if (onCompleted && caret >= value.length) {
         onCompleted();
@@ -72,7 +72,7 @@ class SocialNumberField extends Component {
         value: socialNumber,
         displayValue: socialNumber.replace(/[0-9]/g, '•'),
       });
-      if (socialNumber.length >= unit) { // is completed?
+      if (socialNumber.length >= unit) { // 입력완료
         if (onCompleted && caret >= value.length) {
           onCompleted();
         }
