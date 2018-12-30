@@ -6,6 +6,7 @@ import TextInput from '../TextInput';
 import ErrorMessage from '../ErrorMessage';
 
 import Validator from '../../app/Validator';
+import Formatter from '../../app/Formatter';
 
 class CardNumberField extends Component {
   constructor(props) {
@@ -49,56 +50,25 @@ class CardNumberField extends Component {
   }
 
   applyFormat = (e) => {
-    const removeWhitespace = (str) => {
-      return str.replace(/\s/g, '');
-    };
-
-    let cardNumber = removeWhitespace(e.target.value);
-    let offset = 0;
-    let caret = e.target.selectionStart;
+    const formatter = new Formatter(4, 4);
 
     const { onCompleted } = this.props;
     const { value } = this.state;
 
-    const cardNumberLen = cardNumber.length;
-    const isDeleted = removeWhitespace(value).length > cardNumber.length; // 삭제 동작 여부
+    const result = formatter.convertCardNumber(
+      e.target.value,
+      value,
+      e.target.selectionStart,
+    );
 
-    const unit = 4;
-    const set = 4;
-
-    if (!Number.isNaN(Number(cardNumber))) { // 문자 입력 무시
-      // 입력 값을 공백으로 분리
-      for (let i = 1; i < cardNumberLen; i += 1) {
-        if (i % unit === 0) {
-          cardNumber = `${cardNumber.slice(0, i + offset)} ${cardNumber.slice(i + offset)}`;
-          offset += 1;
-
-          if (!isDeleted && caret - offset === i) {
-            caret += 1;
-          }
-        }
-      }
-
-      if (removeWhitespace(cardNumber).length > (unit * set)) { // 입력완료
-        caret -= 1;
-        if (caret >= value.length) {
-          onCompleted();
-        }
-      } else {
-        this.setState({ value: cardNumber });
-        if (removeWhitespace(cardNumber).length >= (unit * set)) { // 입력완료
-          if (caret >= value.length) {
-            onCompleted();
-          }
-        }
-      }
-
-      if (caret >= value.length) {
-        this.setState({ caretPos: caret + offset });
-      } else {
-        this.setState({ caretPos: caret });
-      }
+    if (onCompleted && result.shouldFocusNext) {
+      onCompleted();
     }
+
+    this.setState({
+      value: result.cardNumber,
+      caretPos: result.caretPos,
+    });
   }
 
   focusIt = () => {

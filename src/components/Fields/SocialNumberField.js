@@ -6,6 +6,7 @@ import TextInput from '../TextInput';
 import ErrorMessage from '../ErrorMessage';
 
 import Validator from '../../app/Validator';
+import Formatter from '../../app/Formatter';
 
 class SocialNumberField extends Component {
   constructor(props) {
@@ -14,8 +15,8 @@ class SocialNumberField extends Component {
     this.state = {
       value: '',
       displayValue: '',
-      caretPos: 0,
       errorMessage: '',
+      caretPos: 0,
     };
 
     this.input = null;
@@ -45,43 +46,27 @@ class SocialNumberField extends Component {
   }
 
   applyFormat = (e) => {
-    let socialNumber = e.target.value;
-    let caret = e.target.selectionStart;
+    const formatter = new Formatter(6);
 
     const { onCompleted } = this.props;
     const { value, caretPos } = this.state;
 
-    const isDeleted = value.replace(/\s/g, '').length > socialNumber.length; // 삭제 동작 여부
-    const unit = 6;
+    const result = formatter.convertSocialNumber(
+      e.target.value,
+      value,
+      e.target.selectionStart,
+      caretPos,
+    );
 
-    if (!Number.isNaN(Number(socialNumber))) { // 문자 입력 무시
-      if (value === '') {
-        this.setState({ value: socialNumber });
-      } else if (isDeleted) {
-        socialNumber = `${value.slice(0, caret)}${value.slice(caretPos)}`;
-      } else {
-        socialNumber = `${value}${socialNumber.slice(-1)}`;
-      }
-
-      if (socialNumber.length > unit) { // 입력완료
-        caret -= 1;
-        if (onCompleted && caret >= value.length) {
-          onCompleted();
-        }
-      } else {
-        this.setState({
-          value: socialNumber,
-          displayValue: socialNumber.replace(/[0-9]/g, '•'),
-        });
-        if (socialNumber.length >= unit) { // 입력완료
-          if (onCompleted && caret >= value.length) {
-            onCompleted();
-          }
-        }
-      }
-
-      this.setState({ caretPos: caret });
+    if (onCompleted && result.shouldFocusNext) {
+      onCompleted();
     }
+
+    this.setState({
+      value: result.socialNumber,
+      displayValue: result.displaySocialNumber,
+      caretPos: result.caretPos,
+    });
   }
 
   focusIt = () => {

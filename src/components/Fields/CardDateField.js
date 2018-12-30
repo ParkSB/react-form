@@ -6,6 +6,7 @@ import TextInput from '../TextInput';
 import ErrorMessage from '../ErrorMessage';
 
 import Validator from '../../app/Validator';
+import Formatter from '../../app/Formatter';
 
 class CardDateField extends Component {
   constructor(props) {
@@ -52,56 +53,25 @@ class CardDateField extends Component {
   }
 
   applyFormat = (e) => {
-    const removeWhitespace = (str) => {
-      return str.replace(/\s[/]\s/g, '');
-    };
-
-    let cardDate = removeWhitespace(e.target.value);
-    let offset = 0;
-    let caret = e.target.selectionStart;
+    const formatter = new Formatter(2, 2);
 
     const { onCompleted } = this.props;
     const { value } = this.state;
 
-    const cardDateLen = cardDate.length;
-    const isDeleted = removeWhitespace(value).length > cardDate.length; // 삭제 동작 여부
+    const result = formatter.convertCardDate(
+      e.target.value,
+      value,
+      e.target.selectionStart,
+    );
 
-    const unit = 2;
-    const set = 2;
-
-    if (!Number.isNaN(Number(cardDate))) { // 문자 입력 무시
-      // 입력 값에서 연, 월 분리
-      for (let i = 1; i < cardDateLen; i += 1) {
-        if (i % unit === 0) {
-          cardDate = `${cardDate.slice(0, i + offset)} / ${cardDate.slice(i + offset)}`;
-          offset += 3;
-
-          if (!isDeleted && caret - offset === i) {
-            caret += 3;
-          }
-        }
-      }
-
-      if (removeWhitespace(cardDate).length > (unit * set)) { // 입력완료
-        caret -= 1;
-        if (onCompleted && caret >= value.length) {
-          onCompleted();
-        }
-      } else {
-        this.setState({ value: cardDate });
-        if (removeWhitespace(cardDate).length >= (unit * set)) { // 입력완료
-          if (onCompleted && caret >= value.length) {
-            onCompleted();
-          }
-        }
-      }
-
-      if (caret >= value.length) {
-        this.setState({ caretPos: caret + offset });
-      } else {
-        this.setState({ caretPos: caret });
-      }
+    if (onCompleted && result.shouldFocusNext) {
+      onCompleted();
     }
+
+    this.setState({
+      value: result.cardDate,
+      caretPos: result.caretPos,
+    });
   }
 
   focusIt = () => {
