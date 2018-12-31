@@ -4,6 +4,14 @@ class Formatter {
     this.set = set;
   }
 
+  /**
+   * 카드번호 형식을 적용한다
+   *
+   * @param {string} newString - 입력을 반영한 문자열
+   * @param {string} oldString - 직전 문자열
+   * @param {number} caretPosition - caret 위치
+   * @return {object}
+   */
   convertCardNumber(newString, oldString, caretPosition) {
     const removeSep = (str) => {
       return str.replace(/\s/g, '');
@@ -23,6 +31,7 @@ class Formatter {
       shouldFocusNext: false,
     };
 
+    // 구분자 삽입
     for (let i = 1; i < cardNumberLen; i += 1) {
       if (i % this.unit === 0) {
         const index = i + offset;
@@ -62,6 +71,14 @@ class Formatter {
     return result;
   }
 
+  /**
+   * 카드 유효기간 형식을 적용한다
+   *
+   * @param {string} newString - 입력을 반영한 문자열
+   * @param {string} oldString - 직전 문자열
+   * @param {number} caretPosition - caret 위치
+   * @return {object}
+   */
   convertCardDate(newString, oldString, caretPosition) {
     const removeSep = (str) => {
       return str.replace(/\s[/]\s/g, '');
@@ -82,6 +99,7 @@ class Formatter {
     };
 
     if (!Number.isNaN(Number(cardDate))) { // 문자 입력 무시
+      // 구분자 삽입
       for (let i = 1; i < cardDateLen; i += 1) {
         if (i % this.unit === 0) {
           const index = i + offset;
@@ -124,6 +142,15 @@ class Formatter {
     return result;
   }
 
+  /**
+   * 주민번호 앞 6자리 형식을 적용한다
+   *
+   * @param {string} displayString - 입력을 반영한 문자열
+   * @param {string} oldString - 직전 문자열
+   * @param {number} caretPosition - caret 위치
+   * @param {number} oldCaretPosition - 직전 caret 위치
+   * @return {object}
+   */
   convertSocialNumber(displayString, string, caretPosition, oldCaretPosition) {
     let caret = caretPosition;
 
@@ -139,7 +166,7 @@ class Formatter {
 
     if (string === '') {
       result.socialNumber = displayString;
-    } else if (isDeleted) {
+    } else if (isDeleted) { // 삭제 동작
       if (caret > oldCaretPosition) {
         result.socialNumber = `${result.socialNumber.slice(0, oldCaretPosition)}${result.socialNumber.slice(caret)}`;
       } else {
