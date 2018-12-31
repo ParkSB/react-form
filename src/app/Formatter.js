@@ -124,41 +124,43 @@ class Formatter {
     return result;
   }
 
-  convertSocialNumber(newString, oldString, caretPosition, oldCaretPosition) {
+  convertSocialNumber(displayString, string, caretPosition, oldCaretPosition) {
     let caret = caretPosition;
 
-    const socialNumber = newString;
-    const isDeleted = oldString.length > socialNumber.length;
+    const isDeleted = string.length > displayString.length;
 
     const mask = '•';
     const result = {
-      socialNumber: '',
+      socialNumber: string,
       displaySocialNumber: '',
-      caretPos: 0,
+      caretPos: caretPosition,
       shouldFocusNext: false,
     };
 
-    if (oldString === '') {
-      result.socialNumber = socialNumber;
+    if (string === '') {
+      result.socialNumber = displayString;
     } else if (isDeleted) {
-      result.socialNumber = `${oldString.slice(0, caret)}${oldString.slice(oldCaretPosition)}`;
+      if (caret > oldCaretPosition) {
+        result.socialNumber = `${result.socialNumber.slice(0, oldCaretPosition)}${result.socialNumber.slice(caret)}`;
+      } else {
+        result.socialNumber = `${result.socialNumber.slice(0, caret)}${result.socialNumber.slice(oldCaretPosition)}`;
+      }
     } else {
-      result.socialNumber = `${oldString}${socialNumber.slice(-1)}`;
+      result.socialNumber = `${string}${displayString.slice(-1)}`;
     }
 
-    if (socialNumber.length > this.unit) {
+    if (result.socialNumber.length > this.unit) {
       caret -= 1;
-      if (caret >= oldString.length) {
-        result.socialNumber = oldString;
-        result.displaySocialNumber = oldString.replace(/[0-9]/g, mask);
+      if (caret >= string.length) {
+        result.socialNumber = string;
+        result.displaySocialNumber = string.replace(/[0-9]/g, mask);
         result.shouldFocusNext = true;
       }
     } else {
-      result.socialNumber = socialNumber;
-      result.displaySocialNumber = socialNumber.replace(/[0-9]/g, mask);
+      result.displaySocialNumber = result.socialNumber.replace(/[0-9]/g, mask);
 
-      if (socialNumber.length >= this.unit) { // 입력완료
-        if (caret >= oldString.length) {
+      if (result.socialNumber.length >= this.unit) { // 입력완료
+        if (caret >= string.length) {
           result.shouldFocusNext = true;
         }
       }

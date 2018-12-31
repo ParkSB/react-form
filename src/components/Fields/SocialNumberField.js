@@ -32,6 +32,10 @@ class SocialNumberField extends Component {
     };
   }
 
+  setCaretPos = (e) => {
+    this.setState({ caretPos: e.target.selectionStart });
+  }
+
   testValidation = () => {
     const { value } = this.state;
     const validator = new Validator();
@@ -83,6 +87,7 @@ class SocialNumberField extends Component {
         <TextInput
           ref={(el) => { this.input = el; }}
           autoFocus={autoFocus}
+          onClick={this.setCaretPos}
           onBlur={this.testValidation}
           onChange={this.applyFormat}
           value={displayValue}
