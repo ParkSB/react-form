@@ -32,6 +32,7 @@ class SocialNumberField extends Component {
     };
   }
 
+  // input을 클릭했을 때 캐럿 위치를 재설정한다.
   setCaretPos = (e) => {
     this.setState({ caretPos: e.target.selectionStart });
   }

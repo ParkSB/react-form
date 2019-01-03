@@ -13,6 +13,8 @@ class App extends Component {
     super();
 
     this.state = {
+      isValid: false,
+      isSubmitted: false,
       currentFocused: 0,
     };
 
@@ -28,23 +30,41 @@ class App extends Component {
     }
   }
 
+  setValueValid = (value) => {
+    this.setState({ isValid: value });
+  }
+
+  handleSubmit = (e) => {
+    const { currentFocused } = this.state;
+
+    e.preventDefault();
+    if (currentFocused === this.fields.length) {
+      this.setState({ isSubmitted: true });
+    }
+  }
+
   render() {
+    const { isValid, isSubmitted } = this.state;
+
     return (
       <Container>
-        <Form>
+        <Form onSubmit={this.handleSubmit}>
           <CardNumberField
             ref={(el) => { this.fields[0] = el; }}
             onCompleted={this.focusNextField}
+            disabled={isSubmitted}
             autoFocus
           />
           <CardDateField
             ref={(el) => { this.fields[1] = el; }}
             onCompleted={this.focusNextField}
+            disabled={isSubmitted}
           />
           <SocialNumberField
             ref={(el) => { this.fields[2] = el; }}
+            disabled={isSubmitted}
           />
-          <SubmitButton />
+          <SubmitButton disabled={!isValid} />
         </Form>
       </Container>
     );
